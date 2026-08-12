@@ -1,37 +1,21 @@
 #!/bin/bash
 
-# Descarga, descompresión y limpieza inicial
+# descarga.sh
+# Descarga y limpieza del dataset de rendimiento estudiantil
 
-echo "=== Iniciando descarga del dataset ==="
-
-# 1. Descargar el archivo desde Google Drive
-FILE_ID="1zj_BZsUYwkRKFFX4o69GE2pf0XKFpdYu"
-URL="https://drive.google.com/uc?export=download&id=${FILE_ID}"
-
+# 1. Descargar el dataset
 echo "Descargando dataset..."
-curl -L -o dataset_raw.csv "$URL"
+curl -L -o dataset_raw.csv "https://drive.google.com/uc?export=download&id=1zj_BZsUYwkRKFFX4o69GE2pf0XKFpdYu"
 
-# 2. Verificar que la descarga fue exitosa
-if [ ! -f dataset_raw.csv ]; then
-    echo "ERROR: No se pudo descargar el archivo."
-    exit 1
-fi
-echo "Descarga exitosa."
+# 2. Verificar que se descargó bien
+ls -la dataset_raw.csv
+head -5 dataset_raw.csv
+wc -l dataset_raw.csv
 
-# 3. Limpieza: eliminar filas vacías y corregir separador
-echo "Limpiando dataset..."
-sed '/^[;]*$/d' dataset_raw.csv | tr ';' ',' > dataset.csv
+# 3. Cambiar separador de ; a , para que R lo lea bien
+tr ';' ',' < dataset_raw.csv > dataset.csv
 
-# 4. Verificar resultado
-if [ ! -f dataset.csv ]; then
-    echo "ERROR: No se pudo generar dataset.csv"
-    exit 1
-fi
-
-FILAS=$(wc -l < dataset.csv)
-echo "Dataset listo: dataset.csv ($FILAS filas)"
-
-# 5. Eliminar archivo temporal
+# 4. Eliminar archivo temporal
 rm dataset_raw.csv
 
-echo "=== Proceso finalizado. Archivo listo para importar en R ==="
+echo "Listo! dataset.csv disponible para importar en R"
